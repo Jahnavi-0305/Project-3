@@ -1,50 +1,58 @@
-'use strict';
-class TableTemplate {
-    static fillIn(tID, dict, colName = null) {
-        const MainTable = document.getElementById(tID);
+"use strict";
+(function () {
+    class TableTemplate {
+        static fillIn(tId, dict, NameCol) {
+            const table = document.getElementById(tId);
 
-        let tbody = MainTable.querySelector('tbody');
-        if (!tbody) {
-            tbody = document.createElement('tbody');
-            MainTable.appendChild(tbody);
-        }
+            const headerRow = table.rows[0];
+            const isPartNumberTable = NameCol === 'Part Number' && tId === 'table1';
 
-        // Find all header cells and replace template strings with dictionary values
-        const headerRow = MainTable.rows[0];
-        Array.from(headerRow.cells).forEach(cell => {
-            cell.textContent = this.replaceTemplates(cell.textContent, dict);
-        });
+            // eslint-disable-next-line array-callback-return
+            Array.from(headerRow.cells).map(cell => {
+                const columnHeader = cell.textContent.trim();
+                // eslint-disable-next-line max-len
+                cell.textContent = this.fillCellTemplate(columnHeader, dict, columnHeader, isPartNumberTable);
+            });
+            // eslint-disable-next-line max-len
+            const columnIndex = NameCol ? Array.from(headerRow.cells).findIndex(cell => cell.textContent.trim() === NameCol) : -1;
 
-        // If columnName is specified, find the index of the column
-        let columnIndex = -1;
+            for (let i = 1; i < table.rows.length; i++) {
+                const row = table.rows[i];
 
-        if (colName) {
-            const cellsArray = Array.from(headerRow.cells);
+                if (columnIndex !== -1) {
+                    const cell = row.cells[columnIndex];
+                    // eslint-disable-next-line max-len
+                    cell.textContent = this.fillCellTemplate(cell.textContent, dict, NameCol, false);
+                } else {
+                    Array.from(row.cells).forEach((cell, j) => {
+                        const currentNameCol = headerRow.cells[j].textContent.trim();
+                        // eslint-disable-next-line max-len
+                        cell.textContent = this.fillCellTemplate(cell.textContent, dict, currentNameCol, isPartNumberTable);
+                    });
 
-            for (const [index, cell] of cellsArray.entries()) {
-                if (cell.textContent == colName) {
-                    columnIndex = index;
-                    break;
                 }
             }
-        }
-        // Iterate through the rows in the specified column and replace templates
-        let tempp=tbody.rows.length
-        for (let i = 0; i <tempp ; i++) {
-            const row = tbody.rows[i];
-            const cell = row.cells[columnIndex];
-            cell.textContent = this.replaceTemplates(cell.textContent, dict);
+
+            table.style.visibility = "visible";
         }
 
-        MainTable.style.visibility = 'visible';
+        static fillCellTemplate(cellContent, dict, NameCol, isPartNumberTable) {
+            const regex = /{{(.*?)}}/g;
+
+            return cellContent.replace(regex, (match, property) => {
+                // eslint-disable-next-line no-nested-ternary
+                const replacement = isPartNumberTable && NameCol === 'Part Number' && property.startsWith('n')
+                    ? `{{${property}}}`
+                    // eslint-disable-next-line no-prototype-builtins
+                    : dict.hasOwnProperty(property)
+                        ? dict[property]
+                        : `{{${property}}}`;
+
+                return replacement;
+
+            });
+        }
     }
-    static replaceTemplates(text, dict) {
-        return text.replace(/{{\s*([^{}]+)\s*}}/g, (match, property) => {
-            if (dict.hasOwnProperty(property)) {
-                return dict[property];
-            } else {
-                return '';
-            }
-        });
-    }
-}
+
+    window.TableTemplate = TableTemplate;
+}());
