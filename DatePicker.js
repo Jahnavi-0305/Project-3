@@ -1,6 +1,6 @@
 'use strict';
 function createDatePicker(id, callback, initialDate) {
-    const currentDate = (initialDate !== undefined && initialDate !== null) ? initialDate : new Date();
+const currentDate = (initialDate !== undefined && initialDate !== null) ? initialDate : new Date();
 
     function render(date) {
         const container = document.getElementById(id);
@@ -38,14 +38,9 @@ function createDatePicker(id, callback, initialDate) {
     `;
 
 
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth();
-        const currentDay = currentDate.getDate();
+        // eslint-disable-next-line no-shadow
         // Calculate the number of days in the month
-        let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
         // Calculate the day of the week for the first day of the month (0 = Sunday, 6 = Saturday)
         const firstDayOfWeek = selectedDate.getDay();
@@ -91,7 +86,9 @@ function createDatePicker(id, callback, initialDate) {
         // Add event listeners to the arrow spans
         const prevMonthSpan = container.querySelector('.prev-month');
         const nextMonthSpan = container.querySelector('.next-month');
+        // eslint-disable-next-line no-use-before-define
         prevMonthSpan.addEventListener('click', () => prevMonth());
+        // eslint-disable-next-line no-use-before-define
         nextMonthSpan.addEventListener('click', () => nextMonth());
     }
 
@@ -125,11 +122,13 @@ function createDatePicker(id, callback, initialDate) {
 }
 
 // Create instances of the DatePicker class with separate IDs
+// eslint-disable-next-line no-unused-vars
 var datePicker1 = createDatePicker("datepicker1", function (id, fixedDate) {
     console.log("DatePicker with id", id, "selected date:", fixedDate.month + "/" + fixedDate.day + "/" + fixedDate.year);
 });
 
 // Initialize datePicker2 with the date set to January 2009 and a different ID
+// eslint-disable-next-line no-unused-vars
 var datePicker2 = createDatePicker("datepicker2", function (id, fixedDate) {
     console.log("DatePicker with id", id, "selected date:", fixedDate.month + "/" + fixedDate.day + "/" + fixedDate.year);
 }, new Date("January 1, 2009"));
